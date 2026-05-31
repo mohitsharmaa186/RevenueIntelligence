@@ -105,6 +105,11 @@ private class DealHealthServiceTest {
         Test.stopTest();
 
         List<Opportunity> results = [SELECT Health_Score__c FROM Opportunity WHERE Id IN :opps];
+        for (Opportunity o : results) {
+            System.assertNotEquals(null, o.Health_Score__c, 'Health score should be set for bulk-inserted opps');
+        }
+    }
+
     @IsTest
     static void testCalculateHealthScore_Direct() {
         Opportunity opp = new Opportunity(

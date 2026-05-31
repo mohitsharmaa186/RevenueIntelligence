@@ -29,6 +29,9 @@ private class RIP_UtilTest {
         System.assertEquals(false, error.get('success'));
 
         Map<String, Object> success = RIP_Util.buildSuccessResponse('data');
+        System.assertEquals(true, success.get('success'));
+    }
+
     @IsTest
     static void testSafeToIntegerAndDaysBetween() {
         System.assertEquals(42, RIP_Util.safeToInteger(42.7));

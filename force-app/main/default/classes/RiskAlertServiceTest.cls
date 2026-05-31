@@ -80,6 +80,10 @@ private class RiskAlertServiceTest {
         RiskAlertService.resolveImprovedAlerts(new List<Opportunity>{ opp });
         Test.stopTest();
 
+        alert = [SELECT Status__c FROM Risk_Alert__c WHERE Id = :alert.Id];
+        System.assertEquals('Resolved', alert.Status__c, 'Alert should be resolved when health improves');
+    }
+
     @IsTest
     static void testPublishRiskEscalation() {
         Account acc = [SELECT Id FROM Account LIMIT 1];

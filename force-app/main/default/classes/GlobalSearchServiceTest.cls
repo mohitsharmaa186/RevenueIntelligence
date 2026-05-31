@@ -39,6 +39,10 @@ private class GlobalSearchServiceTest {
         Map<String, Object> results = GlobalSearchService.search('');
         Test.stopTest();
 
+        List<Object> opps = (List<Object>) results.get('opportunities');
+        System.assertEquals(0, opps.size(), 'Blank search term should return empty');
+    }
+
     @IsTest
     static void testSearch_AccountTerm() {
         Test.startTest();
