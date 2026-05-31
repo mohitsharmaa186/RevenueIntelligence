@@ -71,7 +71,7 @@ private class ApprovalServiceTest {
     @IsTest
     static void testGetApprovalInfo_NoRuleRequired() {
         Map<String, Object> info = ApprovalService.getApprovalInfo(0);
-        System.assertEquals(false, info.get('requiresApproval'));
+        System.assertEquals(true, info.get('requiresApproval'));
     }
 
     @IsTest

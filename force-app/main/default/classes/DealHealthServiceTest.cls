@@ -115,7 +115,6 @@ private class DealHealthServiceTest {
         Opportunity opp = new Opportunity(
             StageName = 'Unknown Stage',
             CloseDate = Date.today().addDays(120),
-            LastActivityDate = Date.today(),
             Discount_Percentage__c = 0.02
         );
 
@@ -162,7 +161,8 @@ private class DealHealthServiceTest {
             CloseDate = Date.today()
         );
         insert closedOpp;
-        closedOpp = [SELECT IsClosed, IsWon, StageName, CloseDate, Amount, Discount_Percentage__c
+        closedOpp = [SELECT IsClosed, IsWon, StageName, CloseDate, Amount, Discount_Percentage__c,
+                            Health_Score__c
                      FROM Opportunity WHERE Id = :closedOpp.Id];
 
         DealHealthService.processOpportunities(new List<Opportunity>{ openOpp, closedOpp });
