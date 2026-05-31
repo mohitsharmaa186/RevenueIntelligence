@@ -1,0 +1,74 @@
+<template>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Revenue Intelligence</h1>
+            <p class="dashboard-subtitle">Real-time pipeline analytics and deal health monitoring</p>
+        </div>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading metrics" size="medium"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-pipeline">
+                    <div class="kpi-icon">
+                        <lightning-icon icon-name="standard:opportunity" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Pipeline Revenue</span>
+                        <span class="kpi-value">{formattedPipeline}</span>
+                        <span class="kpi-detail">{totalDeals} active deals</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-risk">
+                    <div class="kpi-icon">
+                        <lightning-icon icon-name="utility:warning" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">At Risk Revenue</span>
+                        <span class="kpi-value">{formattedAtRisk}</span>
+                        <span class="kpi-detail">{riskDeals} deals ({riskPercentage}%)</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-healthy">
+                    <div class="kpi-icon">
+                        <lightning-icon icon-name="utility:check" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Healthy Deals</span>
+                        <span class="kpi-value">{healthyDeals}</span>
+                        <span class="kpi-detail">{healthPercentage}% of pipeline</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-won">
+                    <div class="kpi-icon">
+                        <lightning-icon icon-name="utility:trending" size="medium"></lightning-icon>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Won Revenue</span>
+                        <span class="kpi-value">{formattedWon}</span>
+                        <span class="kpi-detail">Closed won total</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-card">
+                    <h2 class="chart-title">Pipeline Health Distribution</h2>
+                    <div class="health-bar-container">
+                        <div class="health-bar healthy-bar" style={healthyBarStyle}></div>
+                        <div class="health-bar risk-bar" style={riskBarStyle}></div>
+                    </div>
+                    <div class="health-legend">
+                        <span class="legend-item"><span class="legend-dot healthy-dot"></span> Healthy ({healthyDeals})</span>
+                        <span class="legend-item"><span class="legend-dot risk-dot"></span> At Risk ({riskDeals})</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,46 @@
+<template>
+    <div class="landing-page">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Revenue Intelligence Platform</h1>
+                <p class="hero-subtitle">
+                    AI-powered sales analytics that help leaders identify at-risk deals,
+                    forecast revenue with confidence, and close more business.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-value">360°</span>
+                        <span class="stat-label">Deal Visibility</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">Real-time</span>
+                        <span class="stat-label">Risk Alerts</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">AI</span>
+                        <span class="stat-label">Powered Insights</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2 class="features-title">Platform Capabilities</h2>
+            <div class="features-grid">
+                <template for:each={features} for:item="feature">
+                    <div key={feature.id} class="feature-card">
+                        <lightning-icon icon-name={feature.icon} size="medium"></lightning-icon>
+                        <h3 class="feature-title">{feature.title}</h3>
+                        <p class="feature-desc">{feature.description}</p>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <section class="dashboard-preview">
+            <h2 class="preview-title">Executive Dashboard</h2>
+            <p class="preview-subtitle">Monitor your entire revenue pipeline from a single view</p>
+            <c-revenue-dashboard></c-revenue-dashboard>
+        </section>
+    </div>
+</template>

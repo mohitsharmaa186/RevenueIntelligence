@@ -1,0 +1,42 @@
+<template>
+    <div class="health-card">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <div class="card-header">
+                <h2 class="card-title">Deal Health</h2>
+                <span class={riskBadgeClass}>{riskLevel}</span>
+            </div>
+
+            <div class="score-section">
+                <div class="score-ring" style={scoreRingStyle}>
+                    <div class="score-inner">
+                        <span class="score-value">{healthScoreDisplay}</span>
+                        <span class="score-label">Health Score</span>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="metric-label">Revenue Confidence</span>
+                        <span class="metric-value">{confidenceDisplay}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Forecast Category</span>
+                        <span class="metric-value">{forecastCategory}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Discount</span>
+                        <span class="metric-value">{discountDisplay}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Approval Status</span>
+                        <span class="metric-value">{approvalStatus}</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

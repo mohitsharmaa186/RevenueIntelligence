@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Close_Date_Validation</fullName>
+    <active>true</active>
+    <description>Close date cannot be more than 2 years in the future for open opportunities.</description>
+    <errorConditionFormula>AND(
+  NOT(IsClosed),
+  CloseDate &gt; ADDMONTHS(TODAY(), 24)
+)</errorConditionFormula>
+    <errorDisplayField>CloseDate</errorDisplayField>
+    <errorMessage>Close date cannot be more than 2 years in the future.</errorMessage>
+</ValidationRule>

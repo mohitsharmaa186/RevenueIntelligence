@@ -1,0 +1,73 @@
+<template>
+    <div class="search-container">
+        <div class="search-input-wrapper">
+            <lightning-icon icon-name="utility:search" size="x-small" class="search-icon"></lightning-icon>
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search opportunities, accounts, contacts, risk alerts..."
+                value={searchTerm}
+                oninput={handleSearchInput}
+            />
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Searching" size="small" class="search-spinner"></lightning-spinner>
+            </template>
+        </div>
+
+        <template if:true={hasAnyResults}>
+            <div class="search-results">
+                <template if:true={hasOpportunities}>
+                    <div class="result-section">
+                        <h3 class="section-title">Opportunities</h3>
+                        <template for:each={results.opportunities} for:item="opp">
+                            <div key={opp.id} class="result-item">
+                                <span class="result-name">{opp.name}</span>
+                                <span class="result-meta">{opp.stage} · {opp.riskLevel}</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:true={hasAccounts}>
+                    <div class="result-section">
+                        <h3 class="section-title">Accounts</h3>
+                        <template for:each={results.accounts} for:item="acc">
+                            <div key={acc.id} class="result-item">
+                                <span class="result-name">{acc.name}</span>
+                                <span class="result-meta">{acc.industry}</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:true={hasContacts}>
+                    <div class="result-section">
+                        <h3 class="section-title">Contacts</h3>
+                        <template for:each={results.contacts} for:item="con">
+                            <div key={con.id} class="result-item">
+                                <span class="result-name">{con.name}</span>
+                                <span class="result-meta">{con.email}</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:true={hasRiskAlerts}>
+                    <div class="result-section">
+                        <h3 class="section-title">Risk Alerts</h3>
+                        <template for:each={results.riskAlerts} for:item="alert">
+                            <div key={alert.id} class="result-item">
+                                <span class="result-name">{alert.name}</span>
+                                <span class="result-meta">{alert.severity} · {alert.status}</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={noResults}>
+            <div class="no-results">No results found for "{searchTerm}"</div>
+        </template>
+    </div>
+</template>

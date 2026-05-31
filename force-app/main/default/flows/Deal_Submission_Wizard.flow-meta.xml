@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <description>Multi-step wizard for submitting deals with discount approval routing.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formulaDiscountDecimal</name>
+        <dataType>Number</dataType>
+        <expression>IF(ISBLANK({!DiscountPct}), 0, {!DiscountPct} / 100)</expression>
+        <scale>4</scale>
+    </formulas>
+    <interviewLabel>Deal Submission Wizard {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Deal Submission Wizard</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <status>Active</status>
+
+    <choices>
+        <name>choice_Prospecting</name>
+        <choiceText>Prospecting</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Prospecting</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_Qualification</name>
+        <choiceText>Qualification</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Qualification</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_NeedsAnalysis</name>
+        <choiceText>Needs Analysis</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Needs Analysis</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_ValueProposition</name>
+        <choiceText>Value Proposition</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Value Proposition</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_Proposal</name>
+        <choiceText>Proposal/Price Quote</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Proposal/Price Quote</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_Negotiation</name>
+        <choiceText>Negotiation/Review</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Negotiation/Review</stringValue>
+        </value>
+    </choices>
+
+    <variables>
+        <name>varAccountId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varNewOpportunityId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+
+    <screens>
+        <name>Screen_Account_Selection</name>
+        <label>Account Selection</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Opportunity_Details</targetReference>
+        </connector>
+        <fields>
+            <name>AccountLookup</name>
+            <extensionName>flowruntime:lookup</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>objectApiName</name>
+                <value>
+                    <stringValue>Account</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fieldApiName</name>
+                <value>
+                    <stringValue>Name</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>Select Account</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>required</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <outputParameters>
+                <assignToReference>varAccountId</assignToReference>
+                <name>recordId</name>
+            </outputParameters>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <screens>
+        <name>Screen_Opportunity_Details</name>
+        <label>Opportunity Details</label>
+        <locationX>176</locationX>
+        <locationY>254</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Discount_Request</targetReference>
+        </connector>
+        <fields>
+            <name>OppName</name>
+            <dataType>String</dataType>
+            <fieldText>Opportunity Name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>OppAmount</name>
+            <dataType>Currency</dataType>
+            <fieldText>Amount</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <scale>2</scale>
+        </fields>
+        <fields>
+            <name>OppCloseDate</name>
+            <dataType>Date</dataType>
+            <fieldText>Close Date</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>OppStage</name>
+            <choiceReferences>choice_Prospecting</choiceReferences>
+            <choiceReferences>choice_Qualification</choiceReferences>
+            <choiceReferences>choice_NeedsAnalysis</choiceReferences>
+            <choiceReferences>choice_ValueProposition</choiceReferences>
+            <choiceReferences>choice_Proposal</choiceReferences>
+            <choiceReferences>choice_Negotiation</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Stage</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <screens>
+        <name>Screen_Discount_Request</name>
+        <label>Discount Request</label>
+        <locationX>176</locationX>
+        <locationY>374</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Review</targetReference>
+        </connector>
+        <fields>
+            <name>DiscountPct</name>
+            <dataType>Number</dataType>
+            <fieldText>Discount Percentage (enter 0-50, e.g. 15 for 15%)</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+            <scale>2</scale>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <screens>
+        <name>Screen_Review</name>
+        <label>Review and Submit</label>
+        <locationX>176</locationX>
+        <locationY>494</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Opportunity</targetReference>
+        </connector>
+        <fields>
+            <name>ReviewDisplay</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Review your deal submission&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Account and opportunity details will be saved on submit.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <screens>
+        <name>Screen_Confirmation</name>
+        <label>Submission Complete</label>
+        <locationX>176</locationX>
+        <locationY>734</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>ConfirmMessage</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Deal submitted successfully!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Health score and risk analysis will be calculated automatically.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <recordCreates>
+        <name>Create_Opportunity</name>
+        <label>Create Opportunity</label>
+        <locationX>176</locationX>
+        <locationY>614</locationY>
+        <assignRecordIdToReference>varNewOpportunityId</assignRecordIdToReference>
+        <connector>
+            <targetReference>Screen_Confirmation</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>AccountId</field>
+            <value>
+                <elementReference>varAccountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Amount</field>
+            <value>
+                <elementReference>OppAmount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CloseDate</field>
+            <value>
+                <elementReference>OppCloseDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Discount_Percentage__c</field>
+            <value>
+                <elementReference>formulaDiscountDecimal</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Name</field>
+            <value>
+                <elementReference>OppName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <elementReference>OppStage</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordCreates>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Screen_Account_Selection</targetReference>
+        </connector>
+    </start>
+</Flow>

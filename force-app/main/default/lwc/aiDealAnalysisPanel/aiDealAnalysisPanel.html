@@ -1,0 +1,61 @@
+<template>
+    <div class="ai-panel">
+        <div class="ai-header">
+            <div class="ai-title-row">
+                <lightning-icon icon-name="standard:bot" size="small"></lightning-icon>
+                <h2 class="ai-title">AI Deal Analysis</h2>
+            </div>
+            <lightning-button
+                label="Analyze Deal"
+                variant="brand"
+                icon-name="utility:magicwand"
+                onclick={handleAnalyzeDeal}
+                disabled={isAnalyzing}
+            ></lightning-button>
+        </div>
+
+        <template if:true={isAnalyzing}>
+            <div class="analyzing-state">
+                <lightning-spinner alternative-text="Analyzing" size="medium"></lightning-spinner>
+                <p>AI is analyzing this deal...</p>
+            </div>
+        </template>
+
+        <template if:true={hasAnalysis}>
+            <div class="analysis-content">
+                <div class="confidence-badge">
+                    <span class="confidence-label">Confidence</span>
+                    <span class={confidenceClass}>{confidenceScore}%</span>
+                </div>
+
+                <div class="summary-section">
+                    <h3 class="section-heading">Executive Summary</h3>
+                    <p class="summary-text">{summary}</p>
+                </div>
+
+                <div class="recommendations-section">
+                    <h3 class="section-heading">Recommended Actions</h3>
+                    <ul class="recommendations-list">
+                        <template for:each={recommendations} for:item="rec">
+                            <li key={rec} class="recommendation-item">
+                                <lightning-icon icon-name="utility:forward" size="xx-small"></lightning-icon>
+                                {rec}
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+                <p class="analysis-date">Last analyzed: {formattedDate}</p>
+            </div>
+        </template>
+
+        <template if:false={hasAnalysis}>
+            <template if:false={isAnalyzing}>
+                <div class="empty-state">
+                    <lightning-icon icon-name="utility:magicwand" size="large"></lightning-icon>
+                    <p>Click "Analyze Deal" to generate AI-powered insights</p>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>

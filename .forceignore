@@ -1,0 +1,6 @@
+# List files or directories you want to ignore
+**/.DS_Store
+**/node_modules/**
+**/.sfdx/**
+**/coverage/**
+**/externalCredentials/**

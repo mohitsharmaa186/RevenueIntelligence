@@ -1,0 +1,102 @@
+.health-card {
+    background: #ffffff;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #181818;
+    margin: 0;
+}
+
+.risk-badge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.625rem;
+    border-radius: 1rem;
+}
+
+.risk-low { background: #acf3e4; color: #056764; }
+.risk-medium { background: #fef3e0; color: #8c4b02; }
+.risk-high { background: #fed5d5; color: #8e030f; }
+.risk-critical { background: #ea001e; color: #ffffff; }
+
+.score-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.score-ring {
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.score-inner {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #181818;
+    line-height: 1;
+}
+
+.score-label {
+    font-size: 0.625rem;
+    color: #706e6b;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #939393;
+}
+
+.metric-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #181818;
+    margin-top: 0.125rem;
+}

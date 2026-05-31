@@ -1,0 +1,18 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "Revenue Intelligence Platform",
+      "versionName": "Phase 1 - Core MVP",
+      "versionNumber": "1.0.0.NEXT"
+    }
+  ],
+  "name": "revenue-intelligence-platform",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "62.0",
+  "packageAliases": {
+    "Revenue Intelligence Platform": "0Ho000000000000"
+  }
+}

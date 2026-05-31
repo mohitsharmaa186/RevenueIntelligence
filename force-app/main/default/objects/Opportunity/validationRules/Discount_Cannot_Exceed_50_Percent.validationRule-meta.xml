@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Discount_Cannot_Exceed_50_Percent</fullName>
+    <active>true</active>
+    <description>Discount percentage cannot exceed 50%.</description>
+    <errorConditionFormula>Discount_Percentage__c &gt; 0.50</errorConditionFormula>
+    <errorDisplayField>Discount_Percentage__c</errorDisplayField>
+    <errorMessage>Discount cannot exceed 50%. Please adjust the discount percentage.</errorMessage>
+</ValidationRule>

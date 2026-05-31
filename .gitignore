@@ -1,0 +1,16 @@
+# Salesforce DX
+.sfdx/
+.localdevserver/
+.sf/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/

@@ -1,0 +1,63 @@
+<template>
+    <div class="intel-panel">
+        <div class="panel-header">
+            <lightning-icon icon-name="standard:insights" size="small"></lightning-icon>
+            <h2 class="panel-title">Opportunity Intelligence</h2>
+            <span class={riskBadgeClass}>{riskLevel} Risk</span>
+        </div>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <div class="intel-metrics">
+                <div class="intel-metric">
+                    <span class="intel-label">Health Score</span>
+                    <span class="intel-value">{healthScore}</span>
+                </div>
+                <div class="intel-metric">
+                    <span class="intel-label">Revenue Confidence</span>
+                    <span class="intel-value">{revenueConfidence}%</span>
+                </div>
+                <div class="intel-metric">
+                    <span class="intel-label">Forecast</span>
+                    <span class="intel-value">{forecastCategory}</span>
+                </div>
+                <div class="intel-metric">
+                    <span class="intel-label">Approval</span>
+                    <span class="intel-value">{approvalStatus}</span>
+                </div>
+            </div>
+
+            <template if:true={hasAlerts}>
+                <div class="alerts-section">
+                    <h3 class="alerts-title">
+                        <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
+                        Risk Alerts ({alertCount})
+                    </h3>
+                    <template for:each={alerts} for:item="alert">
+                        <div key={alert.id} class="alert-item">
+                            <div class="alert-header">
+                                <span class="alert-severity">{alert.severity}</span>
+                                <span class="alert-score">Score: {alert.riskScore}</span>
+                            </div>
+                            <p class="alert-reason">{alert.reason}</p>
+                            <p class="alert-action">
+                                <lightning-icon icon-name="utility:forward" size="xx-small"></lightning-icon>
+                                {alert.recommendedAction}
+                            </p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <template if:false={hasAlerts}>
+                <div class="no-alerts">
+                    <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                    <span>No active risk alerts — deal is healthy</span>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>
