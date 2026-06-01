@@ -41,7 +41,7 @@ public with sharing class AIDealAnalysisService {
             Opportunity__c = opportunityId,
             AI_Summary__c = (String) analysisResult.get('summary'),
             Recommendations__c = JSON.serialize(analysisResult.get('recommendations')),
-            Confidence_Score__c = (Decimal) analysisResult.get('confidenceScore'),
+            Confidence_Score__c = decimalValue(analysisResult.get('confidenceScore')),
             Analysis_Date__c = DateTime.now()
         );
         insert analysis;
@@ -124,13 +124,22 @@ public with sharing class AIDealAnalysisService {
             opp.Risk_Level__c + ' risk level. ' +
             (alerts.isEmpty() ? 'No active risk alerts.' : alerts.size() + ' active risk alert(s).');
 
+        // AI Confidence: weighted composite of four independent signals
+        Decimal revConfidence = opp.Revenue_Confidence_Score__c != null ? opp.Revenue_Confidence_Score__c : (healthScore * 0.5);
+        Decimal stageProb = RIP_Constants.STAGE_PROBABILITY.containsKey(opp.StageName)
+            ? RIP_Constants.STAGE_PROBABILITY.get(opp.StageName)
+            : 10;
+        Decimal riskFactor = riskToFactor(opp.Risk_Level__c);
+        Decimal rawConfidence = (revConfidence * 0.35) + (stageProb * 0.25) + (healthScore * 0.25) + (riskFactor * 0.15);
+        Decimal confidenceScore = RIP_Util.clamp(rawConfidence, 0, 100).setScale(1);
+
         return new Map<String, Object>{
             'summary' => opp.Name + ' — $' + opp.Amount + ' opportunity at ' + opp.StageName +
                 ' stage with ' + healthScore + '% health score.',
             'riskExplanation' => riskExplanation,
             'winProbability' => winProb.setScale(1),
             'recommendations' => recommendations,
-            'confidenceScore' => healthScore
+            'confidenceScore' => confidenceScore
         };
     }
 
@@ -161,5 +170,28 @@ public with sharing class AIDealAnalysisService {
             'confidenceScore' => analysis.Confidence_Score__c,
             'analysisDate' => analysis.Analysis_Date__c
         };
+    }
+
+    /**
+     * @description Safely converts an Object (Integer or Decimal) to Decimal.
+     */
+    @TestVisible
+    private static Decimal decimalValue(Object val) {
+        if (val == null) return 0;
+        if (val instanceof Decimal) return (Decimal) val;
+        if (val instanceof Integer) return Decimal.valueOf((Integer) val);
+        return 0;
+    }
+
+    /**
+     * @description Converts Risk_Level__c to a 0-100 factor for confidence calculation.
+     */
+    @TestVisible
+    private static Decimal riskToFactor(String riskLevel) {
+        if (riskLevel == RIP_Constants.RISK_LEVEL_CRITICAL) return 0;
+        if (riskLevel == RIP_Constants.RISK_LEVEL_HIGH) return 30;
+        if (riskLevel == RIP_Constants.RISK_LEVEL_MEDIUM) return 70;
+        if (riskLevel == RIP_Constants.RISK_LEVEL_LOW) return 100;
+        return 50; // default for null / unknown
     }
 }

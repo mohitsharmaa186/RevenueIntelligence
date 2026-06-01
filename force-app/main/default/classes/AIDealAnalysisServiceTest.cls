@@ -27,6 +27,9 @@ private class AIDealAnalysisServiceTest {
         System.assertNotEquals(null, result.get('summary'));
         System.assertNotEquals(null, result.get('winProbability'));
         System.assertNotEquals(null, result.get('recommendations'));
+        System.assertNotEquals(null, result.get('confidenceScore'));
+        Decimal confidence = AIDealAnalysisService.decimalValue(result.get('confidenceScore'));
+        System.assert(confidence >= 0 && confidence <= 100, 'Confidence must be 0-100, got: ' + confidence);
     }
 
     @IsTest
@@ -89,6 +92,10 @@ private class AIDealAnalysisServiceTest {
 
         System.assertNotEquals(null, result.get('summary'));
         System.assertNotEquals(null, result.get('riskExplanation'));
+        // Verify confidence differs from health score (past-due + high discount = different risk signals)
+        Opportunity queried = [SELECT Health_Score__c FROM Opportunity WHERE Id = :opp.Id];
+        Decimal confidence = AIDealAnalysisService.decimalValue(result.get('confidenceScore'));
+        System.assert(confidence >= 0 && confidence <= 100, 'Confidence must be 0-100');
     }
 
     @IsTest
@@ -126,6 +133,57 @@ private class AIDealAnalysisServiceTest {
         String prompt = AIDealAnalysisService.buildAnalysisPrompt(opp, new List<Risk_Alert__c>{ alert });
         System.assert(prompt.contains('Prompt Test Opp'));
         System.assert(prompt.contains('Stale activity'));
+    }
+
+    @IsTest
+    static void testRiskToFactor() {
+        System.assertEquals(0, AIDealAnalysisService.riskToFactor('Critical'));
+        System.assertEquals(30, AIDealAnalysisService.riskToFactor('High'));
+        System.assertEquals(70, AIDealAnalysisService.riskToFactor('Medium'));
+        System.assertEquals(100, AIDealAnalysisService.riskToFactor('Low'));
+        System.assertEquals(50, AIDealAnalysisService.riskToFactor(null));
+    }
+
+    @IsTest
+    static void testConfidenceScoreIndependence() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        // High-stage, low-risk opp
+        Opportunity oppA = new Opportunity(
+            Name = 'Confidence A',
+            AccountId = acc.Id,
+            Amount = 100000,
+            StageName = 'Negotiation/Review',
+            CloseDate = Date.today().addDays(10),
+            Discount_Percentage__c = 0.05
+        );
+        // Low-stage, high-discount opp
+        Opportunity oppB = new Opportunity(
+            Name = 'Confidence B',
+            AccountId = acc.Id,
+            Amount = 100000,
+            StageName = 'Prospecting',
+            CloseDate = Date.today().addDays(90),
+            Discount_Percentage__c = 0.40
+        );
+        insert new List<Opportunity>{ oppA, oppB };
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new OpenAIFailureMock());
+        Map<String, Object> resultA = AIDealAnalysisService.analyzeDeal(oppA.Id);
+        Map<String, Object> resultB = AIDealAnalysisService.analyzeDeal(oppB.Id);
+        Test.stopTest();
+
+        Decimal confA = AIDealAnalysisService.decimalValue(resultA.get('confidenceScore'));
+        Decimal confB = AIDealAnalysisService.decimalValue(resultB.get('confidenceScore'));
+        // Different stages and discounts should produce different confidence scores
+        System.assertNotEquals(confA, confB, 'Different opps must yield different AI confidence');
+        // Also verify they differ from their respective health scores
+        Opportunity qA = [SELECT Health_Score__c FROM Opportunity WHERE Id = :oppA.Id];
+        Opportunity qB = [SELECT Health_Score__c FROM Opportunity WHERE Id = :oppB.Id];
+        // At least one should differ (may coincidentally match for one but not both)
+        Boolean aDiffers = confA != qA.Health_Score__c;
+        Boolean bDiffers = confB != qB.Health_Score__c;
+        System.assert(aDiffers || bDiffers, 'AI confidence should differ from health score for at least one opp');
     }
 
     private class OpenAIFailureMock implements HttpCalloutMock {

@@ -4,3 +4,5 @@
 **/.sfdx/**
 **/coverage/**
 **/externalCredentials/**
+**/jsconfig.json
+**/.eslintrc.json
