@@ -192,6 +192,30 @@ force-app/
         ├── applications/
         └── flexipages/
 ```
+## Screenshots
+
+### Revenue Dashboard
+
+The Revenue Dashboard provides visibility into pipeline performance, revenue forecasting, key deals, and AI-generated insights.
+
+![Revenue Dashboard](assets/screenshots/dashboard.png)
+
+---
+
+### Opportunity Intelligence & AI Deal Analysis
+
+Opportunity Intelligence combines Health Score, Revenue Confidence, Risk Assessment, and AI-powered deal recommendations to help sales teams make better decisions.
+
+![Opportunity Intelligence](assets/screenshots/healthscoreai.png)
+
+---
+
+### Custom Revenue Intelligence Opportunities
+
+Custom opportunity records enriched with revenue intelligence metrics, forecasting data, approval workflows, and risk analysis.
+
+![Custom Opportunities](assets/screenshots/customopportunities.png)
+
 ---
 
 ## Deployment
