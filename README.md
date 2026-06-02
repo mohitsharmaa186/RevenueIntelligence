@@ -1,336 +1,259 @@
 # Revenue Intelligence Platform
 
-Enterprise-grade Salesforce application for sales leaders to identify at-risk deals, monitor opportunity health, manage discount approvals, forecast revenue, and generate AI-powered insights.
+A Salesforce-powered Revenue Intelligence Platform that combines opportunity scoring, risk analysis, forecasting, approval workflows, and AI-driven deal insights to help sales teams identify risks, improve forecasting accuracy, and accelerate revenue growth.
 
-Built as a portfolio-quality, production-ready Salesforce ISV product deployable to Developer Edition orgs.
+## Overview
 
----
+Revenue Intelligence Platform is a custom Salesforce application built using Apex, Lightning Web Components (LWC), SOQL, Batch Apex, Platform Events, and REST APIs.
 
-## Architecture Overview
+The platform provides real-time visibility into pipeline health by calculating deal health scores, identifying risks, generating AI-powered recommendations, and surfacing actionable insights directly within Salesforce.
 
-```
-force-app/main/default/
-├── applications/          # Revenue Intelligence Lightning App
-├── classes/               # Apex (Service Layer, Selectors, Handlers, Tests)
-├── customMetadata/        # Approval Rule records (metadata-driven)
-├── externalCredentials/   # OpenAI API credential
-├── flexipages/            # Record pages & app home
-├── flows/                 # Deal Submission Wizard (Screen Flow)
-├── lwc/                   # Lightning Web Components
-├── messageChannels/       # Lightning Message Service
-├── namedCredentials/      # OpenAI Named Credential
-├── objects/               # Custom objects, fields, validation rules
-├── permissionsets/        # Role-based access (Rep, Manager, VP)
-├── tabs/                  # Custom object tabs
-└── triggers/              # OpportunityTrigger (Handler Pattern)
-```
+## Key Features
 
-### Design Patterns
+### Opportunity Intelligence Dashboard
 
-| Pattern | Implementation |
-|---------|---------------|
-| Trigger Handler | `TriggerHandler` → `OpportunityTriggerHandler` |
-| Service Layer | `DealHealthService`, `RiskAlertService`, `ApprovalService`, `AIDealAnalysisService` |
-| Selector | `OpportunitySelector`, `RiskAlertSelector`, `ApprovalRuleSelector` |
-| Constants | `RIP_Constants` — no hardcoded IDs or thresholds |
-| Custom Metadata | `Approval_Rule__mdt` — dynamic approval routing |
-| Utility | `RIP_Util` — shared helpers |
+* Real-time deal health monitoring
+* Revenue confidence scoring
+* Risk classification engine
+* Forecast category recommendations
+* Opportunity intelligence panel
 
----
+### AI Deal Analysis
 
-## Prerequisites
+* Automated deal analysis
+* AI-generated recommendations
+* Win probability estimation
+* Risk explanations
+* Executive deal summaries
 
-- [Salesforce CLI](https://developer.salesforce.com/tools/sfdxcli) (v2.x)
-- Salesforce Developer Edition org
-- [VS Code](https://code.visualstudio.com/) with [Salesforce Extension Pack](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode)
-- Node.js 18+ (for LWC linting, optional)
-- OpenAI API key (Phase 3, optional — rule-based fallback included)
+### Revenue Dashboard
 
----
+* Quarterly performance tracking
+* Revenue forecasting
+* Open pipeline visibility
+* Closed revenue metrics
+* Goal tracking
 
-## Quick Start
+### Risk Management
 
-```bash
-# Clone / navigate to project
-cd revenue-intelligence-platform
+* Automated risk detection
+* Risk alert generation
+* Risk escalation workflows
+* Opportunity monitoring
 
-# Authenticate to your Developer Edition org
-sf org login web --alias rip-dev --set-default
+### Approval Workflow
 
-# Deploy all phases
-sf project deploy start --source-dir force-app
+* Discount approval process
+* Approval audit tracking
+* Approval status monitoring
+* Governance controls
 
-# Run all tests
-sf apex run test --test-level RunLocalTests --result-format human --code-coverage
-```
+### Global Search
+
+* Cross-object search capability
+* Opportunity discovery
+* Fast navigation experience
 
 ---
 
-## Phased Deployment
+## Architecture
 
-Each phase deploys independently without breaking previous phases.
+### Frontend
 
-### Phase 1 — Core Revenue Intelligence MVP
+Lightning Web Components (LWC)
 
-```bash
-sf project deploy start --manifest manifest/phase1-core-mvp.xml --test-level RunSpecifiedTests \
-  --tests DealHealthServiceTest --tests OpportunityTriggerHandlerTest \
-  --tests RiskAlertServiceTest --tests RIP_UtilTest
-```
+* Revenue Dashboard
+* Global Search
+* Deal Health Card
+* Opportunity Intelligence Panel
+* AI Deal Analysis Panel
 
-**Includes:**
-- Custom objects: `Risk_Alert__c`, `Approval_Audit__c`
-- Opportunity fields: Health Score, Risk Level, Discount, Approval Status, etc.
-- Account roll-up summaries: Total Pipeline Value, Total Won Revenue
-- Validation rules (discount ≤ 50%, amount > 0, close date)
-- Formula fields: Revenue Impact, Days Since Last Activity
-- Apex: Trigger, Handler, Services, Selectors
-- LWC: `revenueDashboard`, `dealHealthCard`, `opportunityIntelligencePanel`
-- Flow: Deal Submission Wizard (5-step screen flow)
-- Flexipages: Opportunity record page, App home page
+### Backend
 
-### Phase 2 — Enterprise Automation
+Apex Services
 
-```bash
-sf project deploy start --manifest manifest/phase2-enterprise-automation.xml --test-level RunSpecifiedTests \
-  --tests ApprovalServiceTest --tests RiskRecalculationBatchTest \
-  --tests ForecastSchedulerTest --tests GlobalSearchServiceTest
-```
+* DealHealthService
+* RiskAlertService
+* ApprovalService
+* AIDealAnalysisService
+* GlobalSearchService
+* OpportunitySelector
 
-**Includes:**
-- Custom Metadata: `Approval_Rule__mdt` with 4 approval tiers
-- Approval engine: `ApprovalService` (metadata-driven, no hardcoded rules)
-- SOSL: `GlobalSearchService` + `globalSearch` LWC
-- Batch Apex: `RiskRecalculationBatch`
-- Scheduled Apex: `ForecastScheduler` (nightly at 2 AM)
-- Platform Events: `DealApprovedEvent__e`
-- Lightning Message Service: `Revenue_Intelligence_Channel`
-- Experience Cloud landing page: `revenueIntelligenceLanding`
+### Automation
 
-### Phase 3 — AI Intelligence Layer
-
-```bash
-sf project deploy start --manifest manifest/phase3-ai-intelligence.xml --test-level RunSpecifiedTests \
-  --tests AIDealAnalysisServiceTest --tests DealAnalysisQueueableTest
-```
-
-**Includes:**
-- Custom object: `Deal_Analysis__c`
-- Named Credential: `OpenAI_API`
-- Queueable: `DealAnalysisQueueable`
-- AI Service: `AIDealAnalysisService` (with rule-based fallback)
-- LWC: `aiDealAnalysisPanel`
-
-### Phase 4 — Integration & Security
-
-```bash
-sf project deploy start --manifest manifest/phase4-integration-security.xml --test-level RunSpecifiedTests \
-  --tests RevenueIntelligenceRestAPITest
-```
-
-**Includes:**
-- REST API: `/services/apexrest/revenueintelligence/opportunities` (GET/POST/PUT/DELETE)
-- Permission Sets: Sales Representative, Sales Manager, VP Sales
-
-### Full Deployment
-
-```bash
-sf project deploy start --manifest manifest/package.xml --test-level RunLocalTests
-```
+* Batch Apex
+* Scheduled Jobs
+* Platform Events
+* Triggers
+* Flows
 
 ---
 
-## Post-Deployment Configuration
+## Core Business Logic
 
-### 1. Assign Permission Sets
+### Deal Health Score
 
-Setup → Permission Sets → Assign to users:
+The platform evaluates opportunities using:
 
-| Permission Set | Role | Access Level |
-|---------------|------|-------------|
-| RIP Sales Representative | Sales Rep | Own records |
-| RIP Sales Manager | Manager | Team records |
-| RIP VP Sales | VP Sales | All records |
+* Discount percentage
+* Approval status
+* Opportunity stage
+* Revenue impact
+* Activity history
+* Risk indicators
 
-### 2. Activate Lightning App
+Output:
 
-Setup → App Manager → Find "Revenue Intelligence" → Edit → Assign to profiles.
+* Healthy
+* Moderate Risk
+* High Risk
+* Critical Risk
 
-### 3. Assign Record Page
+### Revenue Confidence Score
 
-Setup → Object Manager → Opportunity → Lightning Record Pages →
-Activate `Revenue Intelligence Opportunity` for Desktop and Phone.
+Revenue confidence is calculated using:
 
-### 4. Assign App Home Page
+* Opportunity stage
+* Deal health score
+* Risk level
+* Historical performance indicators
 
-Setup → App Manager → Revenue Intelligence → Edit → App Settings →
-App Page → Select `Revenue Intelligence Home`.
+### AI Confidence Score
 
-### 5. Schedule Nightly Forecast Job
+AI confidence is independently calculated using:
 
-Execute in Developer Console or Anonymous Apex:
+* Revenue confidence
+* Opportunity stage probability
+* Health score
+* Risk factors
 
-```apex
-String jobId = ForecastScheduler.scheduleNightly();
-System.debug('Scheduled job: ' + jobId);
-```
-
-### 6. Configure OpenAI (Optional — Phase 3)
-
-1. Setup → Named Credentials → OpenAI API → Edit
-2. Configure External Credential with your OpenAI API key
-3. If not configured, AI analysis uses intelligent rule-based fallback
-
-### 7. Experience Cloud Site (Manual Setup)
-
-Experience Cloud sites require UI-based creation:
-
-1. Setup → Digital Experiences → All Sites → New
-2. Select **Build Your Own (LWR)** template
-3. Site name: **Revenue Intelligence Platform**
-4. Create site, then add pages:
-   - **Home**: Add `revenueIntelligenceLanding` component
-   - **Dashboard**: Add `revenueDashboard` component
-5. Administration → Settings → Enable **Public Access**
-6. Publish the site
-7. Test in incognito mode — no login required
-
-### 8. Add Deal Submission Flow to App
-
-Setup → Flows → Deal Submission Wizard → Add to Utility Bar or Action.
+This provides a more realistic assessment than simply reusing health score values.
 
 ---
 
-## REST API Reference
+## Salesforce Components
 
-**Base URL:** `{instance_url}/services/apexrest/revenueintelligence/opportunities`
+### Custom Objects
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/opportunities/` | List all open opportunities |
-| GET | `/opportunities/{id}` | Get opportunity by ID |
-| POST | `/opportunities/` | Create opportunity |
-| PUT | `/opportunities/{id}` | Update opportunity |
-| DELETE | `/opportunities/{id}` | Delete opportunity |
+* Risk Alert
+* Approval Audit
+* Deal Analysis
 
-**Create Example:**
+### Custom Fields
 
-```bash
-curl -X POST {instance_url}/services/apexrest/revenueintelligence/opportunities/ \
-  -H "Authorization: Bearer {access_token}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Enterprise Deal",
-    "accountId": "001XXXXXXXXXXXX",
-    "amount": 250000,
-    "stageName": "Qualification",
-    "closeDate": "2026-09-30",
-    "discountPercentage": 0.10
-  }'
-```
+Opportunity Fields
+
+* Health Score
+* Revenue Confidence Score
+* Forecast Category
+* Risk Level
+* Revenue Impact
+* Approval Status
+* Days Since Last Activity
 
 ---
 
-## Lightning Web Components
+## REST API Support
 
-| Component | Purpose | Targets |
-|-----------|---------|---------|
-| `revenueDashboard` | Executive KPI dashboard with LMS refresh | App Page, Home, Community |
-| `dealHealthCard` | Circular health score with risk badge | Opportunity Record Page |
-| `opportunityIntelligencePanel` | Risk alerts and intelligence metrics | Opportunity Record Page |
-| `globalSearch` | SOSL-powered cross-object search | App Page, Home, Community |
-| `aiDealAnalysisPanel` | AI deal analysis with recommendations | Opportunity Record Page |
-| `revenueIntelligenceLanding` | Public Experience Cloud landing page | Community Page |
+The platform exposes Apex REST services for:
+
+* Opportunity intelligence
+* Revenue analytics
+* Deal analysis operations
 
 ---
 
-## Test Coverage
+## Technical Stack
 
-| Test Class | Covers |
-|-----------|--------|
-| `DealHealthServiceTest` | Health score calculation, dashboard metrics |
-| `OpportunityTriggerHandlerTest` | Trigger handler, bypass, alert generation |
-| `RiskAlertServiceTest` | Alert CRUD, intelligence panel, resolution |
-| `ApprovalServiceTest` | Metadata-driven approval routing |
-| `RiskRecalculationBatchTest` | Batch processing |
-| `ForecastSchedulerTest` | Scheduled job execution |
-| `GlobalSearchServiceTest` | SOSL search |
-| `AIDealAnalysisServiceTest` | AI analysis + fallback |
-| `DealAnalysisQueueableTest` | Async queueable execution |
-| `RevenueIntelligenceRestAPITest` | REST API CRUD |
-| `RIP_UtilTest` | Utility methods |
-
-Target: **90%+ org-wide Apex coverage**
-
----
-
-## Sample Demo Data
-
-Load realistic demo data (50 Accounts, 200 Opportunities, 50 Risk Alerts, 50 Deal Analyses, 50 Approval Audits):
-
-```bash
-# Deploy the loader class
-sf project deploy start --source-dir force-app/main/default/classes/RIP_SampleDataLoader.cls --source-dir force-app/main/default/classes/RIP_SampleDataLoaderTest.cls
-
-# Run via SF CLI
-sf apex run --file scripts/apex/loadSampleData.apex
-```
-
-Or in **Developer Console → Execute Anonymous**:
-
-```apex
-RIP_SampleDataLoader.load();        // First load
-RIP_SampleDataLoader.load(true);     // Reload (deletes existing RIP demo data first)
-```
-
-All demo records are prefixed with `RIP -` for easy identification and cleanup.
-
-| Object | Count | Details |
-|--------|-------|---------|
-| Account | 50 | Mixed industries, types, revenue ranges |
-| Opportunity | 200 | Varied health scores, stages, discounts ($25K–$2.5M) |
-| Risk_Alert__c | 50 | Linked to High/Critical deals with reasons & actions |
-| Deal_Analysis__c | 50 | AI summaries, recommendations, confidence scores |
-| Approval_Audit__c | 50 | Approved/Rejected/Escalated discount history |
-
-A self-contained inline script (no class deploy needed) is at `scripts/apex/loadSampleDataInline.apex`.
-
----
-
-## Interview Talking Points
-
-1. **Architecture**: "I implemented Trigger Handler + Service Layer + Selector patterns with Custom Metadata-driven approval rules — zero hardcoded IDs."
-
-2. **Health Score Algorithm**: "Multi-factor scoring: stage probability (30%), activity recency (30%), discount impact (20%), close date proximity (20%)."
-
-3. **Scalability**: "Batch Apex recalculates health scores nightly; Platform Events decouple approval notifications; Queueable handles AI callouts asynchronously."
-
-4. **Security**: "Three-tier permission sets with field-level security. REST API uses `with sharing` keyword."
-
-5. **AI Integration**: "Named Credential for OpenAI with graceful rule-based fallback when API is unavailable — production-ready resilience."
-
-6. **UI/UX**: "Enterprise dashboard inspired by Clari/Gong with KPI cards, health distribution charts, and Lightning Message Service for real-time updates."
+| Technology               | Usage                   |
+| ------------------------ | ----------------------- |
+| Salesforce Platform      | Core Application        |
+| Apex                     | Business Logic          |
+| Lightning Web Components | UI Layer                |
+| SOQL                     | Data Access             |
+| Batch Apex               | Large Data Processing   |
+| Platform Events          | Event Driven Processing |
+| Flow                     | Process Automation      |
+| REST API                 | Integrations            |
+| GitHub                   | Source Control          |
 
 ---
 
 ## Project Structure
 
+```text
+force-app/
+└── main/
+    └── default/
+        ├── classes/
+        ├── lwc/
+        ├── objects/
+        ├── flows/
+        ├── applications/
+        └── flexipages/
 ```
-revenue-intelligence-platform/
-├── force-app/main/default/     # All Salesforce metadata
-├── manifest/                   # Phased deployment manifests
-│   ├── phase1-core-mvp.xml
-│   ├── phase2-enterprise-automation.xml
-│   ├── phase3-ai-intelligence.xml
-│   ├── phase4-integration-security.xml
-│   └── package.xml             # Full deployment
-├── sfdx-project.json
-├── .forceignore
-└── README.md
+---
+
+## Deployment
+
+Authenticate Org
+
+```bash
+sf org login web
 ```
+
+Deploy Metadata
+
+```bash
+sf project deploy start --source-dir force-app
+```
+
+Run Tests
+
+```bash
+sf apex run test --test-level RunLocalTests
+```
+
+Open Org
+
+```bash
+sf org open
+```
+
+---
+
+## Business Value
+
+This platform helps organizations:
+
+* Improve forecast accuracy
+* Identify risky opportunities early
+* Increase sales visibility
+* Standardize approval processes
+* Accelerate deal execution
+* Improve revenue predictability
+
+---
+
+## Future Enhancements
+
+* Einstein AI Integration
+* Predictive Forecasting
+* Slack Notifications
+* Executive KPI Dashboard
+* Mobile Experience
+* Advanced Revenue Analytics
+
+---
+
+## Author
+
+Mohit Sharma
+
+Salesforce Developer | Apex | Lightning Web Components | Revenue Intelligence Solutions
 
 ---
 
 ## License
 
-Portfolio project — free to use, modify, and deploy for interview demonstrations.
+This project is intended for educational, portfolio, and demonstration purposes.
