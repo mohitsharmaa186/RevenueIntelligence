@@ -21,7 +21,7 @@ export default class AiDealAnalysisPanel extends LightningElement {
         if (data && data.summary) {
             this.summary = data.summary;
             this.recommendations = data.recommendations || [];
-            this.confidenceScore = data.confidenceScore || 0;
+            this.confidenceScore = data.confidenceScore ?? 0;
             this.analysisDate = data.analysisDate;
             this.hasAnalysis = true;
         }
@@ -49,7 +49,7 @@ export default class AiDealAnalysisPanel extends LightningElement {
                 if (data && data.summary) {
                     this.summary = data.summary;
                     this.recommendations = data.recommendations || [];
-                    this.confidenceScore = data.confidenceScore || 0;
+                    this.confidenceScore = data.confidenceScore ?? 0;
                     this.analysisDate = data.analysisDate;
                     this.hasAnalysis = true;
                     this.showToast('Analysis Complete', 'AI deal analysis results are ready.', 'success');

@@ -76,7 +76,7 @@
 
 .metrics-grid {
     display: grid;
-    grid-template-columns: 1fr 1;
+    grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
     flex: 1;
 }

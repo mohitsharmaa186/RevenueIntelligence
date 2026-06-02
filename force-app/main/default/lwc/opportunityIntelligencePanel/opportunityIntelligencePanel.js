@@ -18,14 +18,14 @@ export default class OpportunityIntelligencePanel extends LightningElement {
     wiredIntelligence({ error, data }) {
         this.isLoading = false;
         if (data) {
-            this.opportunityName = data.opportunityName || '';
-            this.healthScore = data.healthScore || 0;
-            this.riskLevel = data.riskLevel || '';
-            this.forecastCategory = data.forecastCategory || '';
-            this.revenueConfidence = data.revenueConfidence || 0;
-            this.discountPercentage = data.discountPercentage || 0;
-            this.approvalStatus = data.approvalStatus || '';
-            this.alerts = data.alerts || [];
+            this.opportunityName = data.opportunityName ?? '';
+            this.healthScore = data.healthScore ?? 0;
+            this.riskLevel = data.riskLevel ?? '';
+            this.forecastCategory = data.forecastCategory ?? '';
+            this.revenueConfidence = data.revenueConfidence ?? 0;
+            this.discountPercentage = data.discountPercentage ?? 0;
+            this.approvalStatus = data.approvalStatus ?? '';
+            this.alerts = data.alerts ?? [];
         } else if (error) {
             console.error('Intelligence panel error:', error);
         }

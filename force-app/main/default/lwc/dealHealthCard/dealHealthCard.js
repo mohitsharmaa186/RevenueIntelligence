@@ -16,12 +16,12 @@ export default class DealHealthCard extends LightningElement {
     wiredHealth({ error, data }) {
         this.isLoading = false;
         if (data) {
-            this.healthScore = data.healthScore || 0;
-            this.riskLevel = data.riskLevel || 'Unknown';
-            this.revenueConfidence = data.revenueConfidence || 0;
-            this.forecastCategory = data.forecastCategory || '';
-            this.discountPercentage = data.discountPercentage || 0;
-            this.approvalStatus = data.approvalStatus || '';
+            this.healthScore = data.healthScore ?? 0;
+            this.riskLevel = data.riskLevel ?? 'Unknown';
+            this.revenueConfidence = data.revenueConfidence ?? 0;
+            this.forecastCategory = data.forecastCategory ?? '';
+            this.discountPercentage = data.discountPercentage ?? 0;
+            this.approvalStatus = data.approvalStatus ?? '';
         } else if (error) {
             console.error('Deal health error:', error);
         }

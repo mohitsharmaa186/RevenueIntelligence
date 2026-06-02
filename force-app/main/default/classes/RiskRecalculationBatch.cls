@@ -18,7 +18,12 @@ public with sharing class RiskRecalculationBatch implements Database.Batchable<S
 
     public void execute(Database.BatchableContext bc, List<Opportunity> scope) {
         DealHealthService.processOpportunities(scope);
-        update scope;
+        TriggerHandler.bypass('OpportunityTriggerHandler');
+        try {
+            update scope;
+        } finally {
+            TriggerHandler.clearBypass('OpportunityTriggerHandler');
+        }
         recordsProcessed += scope.size();
 
         List<Risk_Alert__c> alerts = RiskAlertService.generateAlerts(scope);

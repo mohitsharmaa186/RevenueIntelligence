@@ -28,14 +28,19 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
 
     public override void afterUpdate() {
         List<Opportunity> oppsNeedingAlerts = new List<Opportunity>();
+        List<Opportunity> escalatedOpps = new List<Opportunity>();
         for (Opportunity opp : (List<Opportunity>) Trigger.new) {
             Opportunity oldOpp = ((Map<Id, Opportunity>) Trigger.oldMap).get(opp.Id);
-            if (opp.Health_Score__c != oldOpp.Health_Score__c && opp.Health_Score__c < RIP_Constants.HEALTH_SCORE_AT_RISK) {
+            if (opp.Health_Score__c != null && opp.Health_Score__c != oldOpp.Health_Score__c && opp.Health_Score__c < RIP_Constants.HEALTH_SCORE_AT_RISK) {
                 oppsNeedingAlerts.add(opp);
             }
             if (opp.Risk_Level__c == RIP_Constants.RISK_LEVEL_CRITICAL && oldOpp.Risk_Level__c != RIP_Constants.RISK_LEVEL_CRITICAL) {
-                RiskAlertService.publishRiskEscalation(opp);
+                escalatedOpps.add(opp);
             }
+        }
+
+        if (!escalatedOpps.isEmpty()) {
+            RiskAlertService.publishRiskEscalations(escalatedOpps);
         }
 
         RiskAlertService.resolveImprovedAlerts((List<Opportunity>) Trigger.new);

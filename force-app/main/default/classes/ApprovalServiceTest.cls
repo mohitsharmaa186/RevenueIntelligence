@@ -60,7 +60,6 @@ private class ApprovalServiceTest {
 
         Test.startTest();
         ApprovalService.processDiscountApproval(opp, 'Approved', 'Looks good');
-        update opp;
         Test.stopTest();
 
         List<Approval_Audit__c> audits = [SELECT Id, Action__c FROM Approval_Audit__c WHERE Opportunity__c = :opp.Id];
@@ -95,7 +94,6 @@ private class ApprovalServiceTest {
 
         Test.startTest();
         ApprovalService.processDiscountApproval(opp, 'Rejected', 'Discount too high');
-        update opp;
         Test.stopTest();
 
         opp = [SELECT Approval_Status__c FROM Opportunity WHERE Id = :opp.Id];

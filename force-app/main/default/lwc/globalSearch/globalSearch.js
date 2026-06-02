@@ -1,7 +1,8 @@
 import { LightningElement } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import search from '@salesforce/apex/GlobalSearchService.search';
 
-export default class GlobalSearch extends LightningElement {
+export default class GlobalSearch extends NavigationMixin(LightningElement) {
     searchTerm = '';
     results = null;
     isLoading = false;
@@ -32,10 +33,30 @@ export default class GlobalSearch extends LightningElement {
             })
             .catch(error => {
                 console.error('Search error:', error);
+                this.results = null;
             })
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    handleResultClick(event) {
+        const recordId = event.currentTarget.dataset.id;
+        const objectType = event.currentTarget.dataset.type;
+        if (recordId) {
+            this[NavigationMixin.Navigate]({
+                type: 'standard__recordPage',
+                attributes: {
+                    recordId: recordId,
+                    objectApiName: objectType,
+                    actionName: 'view'
+                }
+            });
+        }
+    }
+
+    disconnectedCallback() {
+        clearTimeout(this.debounceTimer);
     }
 
     get hasOpportunities() {

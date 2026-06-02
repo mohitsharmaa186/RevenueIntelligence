@@ -6,15 +6,31 @@ public with sharing class RiskAlertService {
      * @description Generates risk alerts for opportunities based on health scores.
      */
     public static List<Risk_Alert__c> generateAlerts(List<Opportunity> opps) {
-        List<Risk_Alert__c> alertsToInsert = new List<Risk_Alert__c>();
-
+        // Collect candidate IDs first
+        Set<Id> candidateIds = new Set<Id>();
         for (Opportunity opp : opps) {
             if (opp.IsClosed || opp.Health_Score__c == null) {
                 continue;
             }
             if (opp.Health_Score__c < RIP_Constants.HEALTH_SCORE_AT_RISK) {
-                Risk_Alert__c alert = buildAlert(opp);
-                alertsToInsert.add(alert);
+                candidateIds.add(opp.Id);
+            }
+        }
+
+        // Exclude opps that already have open alerts
+        Set<Id> alreadyAlerted = new Set<Id>();
+        if (!candidateIds.isEmpty()) {
+            for (Risk_Alert__c a : [SELECT Opportunity__c FROM Risk_Alert__c
+                                    WHERE Opportunity__c IN :candidateIds
+                                    AND Status__c = :RIP_Constants.ALERT_STATUS_OPEN]) {
+                alreadyAlerted.add(a.Opportunity__c);
+            }
+        }
+
+        List<Risk_Alert__c> alertsToInsert = new List<Risk_Alert__c>();
+        for (Opportunity opp : opps) {
+            if (candidateIds.contains(opp.Id) && !alreadyAlerted.contains(opp.Id)) {
+                alertsToInsert.add(buildAlert(opp));
             }
         }
 
@@ -104,7 +120,7 @@ public with sharing class RiskAlertService {
     }
 
     /**
-     * @description Publishes risk escalation platform event.
+     * @description Publishes risk escalation platform event for a single opportunity.
      */
     public static void publishRiskEscalation(Opportunity opp) {
         DealApprovedEvent__e evt = new DealApprovedEvent__e(
@@ -113,6 +129,21 @@ public with sharing class RiskAlertService {
             Message__c = 'Risk escalated for ' + opp.Name + ' — Health Score: ' + opp.Health_Score__c
         );
         EventBus.publish(evt);
+    }
+
+    /**
+     * @description Publishes risk escalation platform events in bulk — single EventBus.publish call.
+     */
+    public static void publishRiskEscalations(List<Opportunity> opps) {
+        List<DealApprovedEvent__e> events = new List<DealApprovedEvent__e>();
+        for (Opportunity opp : opps) {
+            events.add(new DealApprovedEvent__e(
+                Opportunity_Id__c = opp.Id,
+                Event_Type__c = RIP_Constants.EVENT_RISK_ESCALATED,
+                Message__c = 'Risk escalated for ' + opp.Name + ' — Health Score: ' + opp.Health_Score__c
+            ));
+        }
+        EventBus.publish(events);
     }
 
     /**

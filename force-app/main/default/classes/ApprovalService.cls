@@ -33,6 +33,7 @@ public with sharing class ApprovalService {
             opp.Approval_Status__c = RIP_Constants.APPROVAL_STATUS_REJECTED;
             publishApprovalEvent(opp, RIP_Constants.EVENT_DEAL_REJECTED);
         }
+        update opp;
     }
 
     /**

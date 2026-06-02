@@ -69,8 +69,8 @@ public with sharing class DealHealthService {
      * @description Determines forecast category based on health score and stage.
      */
     public static String determineForecastCategory(Opportunity opp, Integer healthScore) {
-        if (opp.IsClosed && opp.IsWon) {
-            return RIP_Constants.FORECAST_CLOSED;
+        if (opp.IsClosed) {
+            return opp.IsWon ? RIP_Constants.FORECAST_CLOSED : RIP_Constants.FORECAST_OMIT;
         }
         if (healthScore >= 80 && opp.Probability >= 75) {
             return RIP_Constants.FORECAST_COMMIT;

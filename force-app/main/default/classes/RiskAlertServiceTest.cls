@@ -17,7 +17,17 @@ private class RiskAlertServiceTest {
             CloseDate = Date.today().addDays(-15),
             Discount_Percentage__c = 0.35
         );
-        insert opp;
+        // Bypass trigger so afterInsert doesn't create alerts first (dedup would skip)
+        TriggerHandler.bypass('OpportunityTriggerHandler');
+        try {
+            insert opp;
+            // Set health score directly since trigger is bypassed
+            opp.Health_Score__c = 15;
+            opp.Risk_Level__c = 'Critical';
+            update opp;
+        } finally {
+            TriggerHandler.clearBypass('OpportunityTriggerHandler');
+        }
 
         opp = [SELECT Id, Health_Score__c, Risk_Level__c, IsClosed, LastActivityDate,
                       Discount_Percentage__c, CloseDate, Name

@@ -22,12 +22,12 @@ export default class RevenueDashboard extends LightningElement {
     wiredMetrics({ error, data }) {
         this.isLoading = false;
         if (data) {
-            this.pipelineRevenue = data.pipelineRevenue || 0;
-            this.atRiskRevenue = data.atRiskRevenue || 0;
-            this.healthyDeals = data.healthyDeals || 0;
-            this.riskDeals = data.riskDeals || 0;
-            this.totalDeals = data.totalDeals || 0;
-            this.wonRevenue = data.wonRevenue || 0;
+            this.pipelineRevenue = data.pipelineRevenue ?? 0;
+            this.atRiskRevenue = data.atRiskRevenue ?? 0;
+            this.healthyDeals = data.healthyDeals ?? 0;
+            this.riskDeals = data.riskDeals ?? 0;
+            this.totalDeals = data.totalDeals ?? 0;
+            this.wonRevenue = data.wonRevenue ?? 0;
         } else if (error) {
             console.error('Dashboard metrics error:', error);
         }
@@ -68,12 +68,12 @@ export default class RevenueDashboard extends LightningElement {
         this.isLoading = true;
         getDashboardMetrics()
             .then(data => {
-                this.pipelineRevenue = data.pipelineRevenue || 0;
-                this.atRiskRevenue = data.atRiskRevenue || 0;
-                this.healthyDeals = data.healthyDeals || 0;
-                this.riskDeals = data.riskDeals || 0;
-                this.totalDeals = data.totalDeals || 0;
-                this.wonRevenue = data.wonRevenue || 0;
+                this.pipelineRevenue = data.pipelineRevenue ?? 0;
+                this.atRiskRevenue = data.atRiskRevenue ?? 0;
+                this.healthyDeals = data.healthyDeals ?? 0;
+                this.riskDeals = data.riskDeals ?? 0;
+                this.totalDeals = data.totalDeals ?? 0;
+                this.wonRevenue = data.wonRevenue ?? 0;
             })
             .catch(error => console.error(error))
             .finally(() => { this.isLoading = false; });
